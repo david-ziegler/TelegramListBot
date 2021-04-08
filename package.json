@@ -1,6 +1,6 @@
 {
   "name": "create-lists-bot",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Create lists in Telegram groups",
   "main": "index.js",
   "scripts": {
