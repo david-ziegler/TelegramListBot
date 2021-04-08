@@ -22,25 +22,4 @@ export class DB {
   public async removeListItem(id: number): Promise<void> {
     await run(this.db, 'DELETE FROM list_items WHERE id=?', [id]);
   }
-
-  // public async rsvpToEvent(event_id: number, user_id: number, name: string): Promise<void> {
-  //   await run(this.db, 'INSERT INTO attendees (event_id, user_id, name) VALUES (?, ?, ?)', [event_id, user_id, sanitized_full_name]);
-  // }
-
-  // public async didThisUserRsvpAlready(chat_id: number, message_id: number, user_id: number): Promise<boolean> {
-  //   const attendances = await this.getAttendeesForEventAndUser(chat_id, message_id, user_id);
-  //   return attendances.length > 0;
-  // }
-
-  // private async getAttendeesForEventAndUser(chat_id: number, message_id: number, user_id: number): Promise<Attendee[]> {
-  //   return await all<Attendee>(this.db, 'SELECT * FROM attendees JOIN events ON attendees.event_id = events.id WHERE chat_id=? AND message_id=? AND user_id=?',
-  //     [chat_id, message_id, user_id],
-  //   );
-  // }
-
-  // public async getAttendeesForEvent(chat_id: number, message_id: number): Promise<Attendee[]> {
-  //   return await all<Attendee>(this.db, 'SELECT * FROM attendees JOIN events ON attendees.event_id = events.id WHERE chat_id=? AND message_id=?',
-  //     [chat_id, message_id],
-  //   );
-  // }
 }

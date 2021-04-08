@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
   res.json({
-    app: 'telegram-event-bot',
+    app: 'telegram-lists-bot',
     version: packageInfo.version,
   });
 });
