@@ -1,5 +1,5 @@
 
-import TelegramBot, { CallbackQuery, EditMessageTextOptions, Message, SendMessageOptions, User } from 'node-telegram-bot-api';
+import TelegramBot, { CallbackQuery, EditMessageTextOptions, Message, SendMessageOptions } from 'node-telegram-bot-api';
 import { InlineKeyboard, InlineKeyboardButton, Row } from 'node-telegram-keyboard-wrapper';
 import packageInfo from '../package.json';
 import { DB } from './db';
@@ -7,16 +7,15 @@ import { i18n } from './i18n';
 import { ListItem } from './models';
 import { ENV } from './stuff/environment-variables';
 
-/* TODO:
- - löschen mit zeitverzögerung
-*/
-
 const db = new DB();
 export const bot = new TelegramBot(ENV.BOT_TOKEN, { polling: true });
 console.log(`Bot server started. Version: ${packageInfo.version}. Production mode: ${ENV.IS_PRODUCTION_MODE}`);
 
 bot.onText(/^\/list*/, async (message: Message) => {
-  await addListItem(message.chat.id, message.text, message.from);
+  const chat_id = message.chat.id;
+  await addListItemIfPresent(chat_id, message.text);
+  const buttons = await listItemButtons(chat_id);
+  await sendMessage(chat_id, buttons);
 });
 
 bot.on('callback_query', async (query: CallbackQuery) => {
@@ -39,14 +38,14 @@ function parseItemId(query_data: string | undefined): number {
   return id;
 }
 
-async function addListItem(chat_id: number, text?: string, from?: User): Promise<void> {
-  if (text === undefined || from === undefined) {
-    throw new Error(`Tried to add to a list but 'text' or 'from' is empty: text=${text}, from=${from}`);
+async function addListItemIfPresent(chat_id: number, text?: string): Promise<void> {
+  if (text === undefined) {
+    throw new Error('Tried to add an item to the list but message.text is undefined,');
   }
   const new_item_text = removeBotCommand(text);
-  await db.insertListItem(chat_id, new_item_text);
-  const buttons = await listItemButtons(chat_id);
-  await sendMessage(chat_id, buttons);
+  if (new_item_text !== '') {
+    await db.insertListItem(chat_id, new_item_text);
+  }
 }
 
 async function updateListButtons(query: CallbackQuery) {
@@ -55,13 +54,12 @@ async function updateListButtons(query: CallbackQuery) {
     throw new Error('Tried to update the list-buttons but "query.message" is undefined.');
   }
   const buttons = await listItemButtons(message.chat.id);
-
   bot.answerCallbackQuery(query.id, { text: '' }).then(async () => {
     const options: EditMessageTextOptions = {
       chat_id: message.chat.id,
       message_id: message.message_id,
       parse_mode: 'MarkdownV2',
-      reply_markup: buttons.getMarkup(),
+      reply_markup: buttons.length > 0 ? buttons.getMarkup() : undefined,
     };
     bot.editMessageText(i18n.message_text, options);
   });
@@ -83,7 +81,7 @@ function addButton(buttons: InlineKeyboard, id: number, text: string) {
 async function sendMessage(chat_id: number, buttons: InlineKeyboard) {
   const options: SendMessageOptions = {
     parse_mode: 'MarkdownV2',
-    reply_markup: buttons.getMarkup(),
+    reply_markup: buttons.length > 0 ? buttons.getMarkup() : undefined,
   };
   return bot.sendMessage(chat_id, i18n.message_text, options);
 }
