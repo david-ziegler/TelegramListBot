@@ -13,7 +13,7 @@ console.log(`Bot server started. Version: ${packageInfo.version}. Production mod
 
 bot.onText(/^\/(L|l)ist.*/, async (message: Message) => {
   const chat_id = message.chat.id;
-  await addListItemIfPresent(chat_id, message.text);
+  await addListItemsIfPresent(chat_id, message.text);
   const buttons = await listItemButtons(chat_id);
   await sendMessage(chat_id, buttons);
 });
@@ -38,14 +38,16 @@ function parseItemId(query_data: string | undefined): number {
   return id;
 }
 
-async function addListItemIfPresent(chat_id: number, text?: string): Promise<void> {
+async function addListItemsIfPresent(chat_id: number, text?: string): Promise<void> {
   if (text === undefined) {
     throw new Error('Tried to add an item to the list but message.text is undefined,');
   }
-  const new_item_text = removeBotCommand(text);
-  if (new_item_text !== '') {
-    await db.insertListItem(chat_id, new_item_text);
+  const new_items_text = removeBotCommand(text);
+  if (new_items_text === '') {
+    return;
   }
+  const new_items = new_items_text.split(/\n/);
+  await db.insertListItems(chat_id, new_items);
 }
 
 async function updateListButtons(query: CallbackQuery) {

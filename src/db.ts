@@ -15,8 +15,10 @@ export class DB {
     return await all<ListItem>(this.db, 'SELECT * FROM list_items WHERE chat_id=?', [chat_id]);
   }
 
-  public async insertListItem(chat_id: number, text: string): Promise<void> {
-    await run(this.db, 'INSERT INTO list_items (chat_id, text) VALUES (?,?)', [chat_id, text]);
+  public async insertListItems(chat_id: number, item_texts: string[]): Promise<void> {
+    item_texts.forEach(async (item_text: string) => {
+      await run(this.db, 'INSERT INTO list_items (chat_id, text) VALUES (?,?)', [chat_id, item_text]);
+    });
   }
 
   public async removeListItem(id: number): Promise<void> {
