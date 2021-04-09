@@ -87,5 +87,5 @@ async function sendMessage(chat_id: number, buttons: InlineKeyboard) {
 }
 
 function removeBotCommand(text: string): string {
-  return text.replace(/^\/list/, '');
+  return text.replace(/^\/(L|l)ist/, '');
 }
