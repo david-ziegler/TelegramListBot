@@ -16,9 +16,9 @@ export class DB {
   }
 
   public async insertListItems(chat_id: number, item_texts: string[]): Promise<void> {
-    item_texts.forEach(async (item_text: string) => {
+    await Promise.all(item_texts.map(async (item_text: string) => {
       await run(this.db, 'INSERT INTO list_items (chat_id, text) VALUES (?,?)', [chat_id, item_text]);
-    });
+    }));
   }
 
   public async removeListItem(id: number): Promise<void> {
