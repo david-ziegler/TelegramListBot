@@ -11,7 +11,7 @@ const db = new DB();
 export const bot = new TelegramBot(ENV.BOT_TOKEN, { polling: true });
 console.log(`Bot server started. Version: ${packageInfo.version}. Production mode: ${ENV.IS_PRODUCTION_MODE}`);
 
-bot.onText(/^\/list*/, async (message: Message) => {
+bot.onText(/^\/(L|l)ist.*/, async (message: Message) => {
   const chat_id = message.chat.id;
   await addListItemIfPresent(chat_id, message.text);
   const buttons = await listItemButtons(chat_id);
