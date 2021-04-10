@@ -11,7 +11,7 @@ const db = new DB();
 export const bot = new TelegramBot(ENV.BOT_TOKEN, { polling: true });
 console.log(`Bot server started. Version: ${packageInfo.version}. Production mode: ${ENV.IS_PRODUCTION_MODE}`);
 
-bot.onText(/^\/(L|l)ist.*/, async (message: Message) => {
+bot.onText(/^\/(L|l)ist(e)?.*/, async (message: Message) => {
   const chat_id = message.chat.id;
   await addListItemsIfPresent(chat_id, message.text);
   const buttons = await listItemButtons(chat_id);
@@ -89,5 +89,5 @@ async function sendMessage(chat_id: number, buttons: InlineKeyboard) {
 }
 
 function removeBotCommand(text: string): string {
-  return text.replace(/^\/(L|l)ist/, '');
+  return text.replace(/^\/(L|l)ist(e)?/, '');
 }
