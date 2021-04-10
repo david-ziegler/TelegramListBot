@@ -1,6 +1,6 @@
 import { Database } from 'sqlite3';
 import { ListItem } from './models';
-import { all, run } from './stuff/db-helper';
+import { all, run } from './stuff/db-helpers';
 import { ENV } from './stuff/environment-variables';
 
 export class DB {
