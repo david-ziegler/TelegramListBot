@@ -1,7 +1,7 @@
 import { Database } from 'sqlite3';
-import { ListItem } from './models';
-import { all, run } from './stuff/db-helpers';
-import { ENV } from './stuff/environment-variables';
+import { ListItem } from '../models';
+import { all, run } from './db-helpers';
+import { ENV } from './environment-variables';
 
 export class DB {
   private db: Database;
