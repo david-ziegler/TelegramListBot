@@ -47,7 +47,8 @@ async function addListItemsIfPresent(chat_id: number, text?: string): Promise<vo
     return;
   }
   const new_items = new_items_text.split(/\n/);
-  await db.insertListItems(chat_id, new_items);
+  const items_trimmed = new_items.map(item => item.trim());
+  await db.insertListItems(chat_id, items_trimmed);
 }
 
 async function updateListButtons(query: CallbackQuery) {
