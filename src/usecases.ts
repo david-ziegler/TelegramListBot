@@ -1,4 +1,4 @@
-import TelegramBot, { CallbackQuery, EditMessageTextOptions, Message } from 'node-telegram-bot-api';
+import TelegramBot, { Message } from 'node-telegram-bot-api';
 import { InlineKeyboard } from 'node-telegram-keyboard-wrapper';
 import { DB } from './adapters/db';
 import * as telegram from './adapters/telegram';
