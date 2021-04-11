@@ -1,3 +1,6 @@
+import { config } from 'dotenv';
+config();
+
 const { DATABASE_PATH, PORT, HOST, NODE_ENV, DEV_BOT_TOKEN, PROD_BOT_TOKEN } = process.env;
 
 if (DATABASE_PATH === undefined) {
