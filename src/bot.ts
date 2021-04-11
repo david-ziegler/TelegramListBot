@@ -11,6 +11,6 @@ bot.onText(/^\/(L|l)ist(e)?.*/, async (message: Message) => {
 });
 
 bot.on('callback_query', async (query: CallbackQuery) => {
-  await removeListItem(query);
-  await updateListButtons(query, bot);
+  await removeListItem(query.data);
+  await updateListButtons(query.id, query.message, bot);
 });

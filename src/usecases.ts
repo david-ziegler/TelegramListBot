@@ -1,4 +1,4 @@
-import TelegramBot, { CallbackQuery, EditMessageTextOptions } from 'node-telegram-bot-api';
+import TelegramBot, { CallbackQuery, EditMessageTextOptions, Message } from 'node-telegram-bot-api';
 import { InlineKeyboard } from 'node-telegram-keyboard-wrapper';
 import { DB } from './adapters/db';
 import * as telegram from './adapters/telegram';
@@ -20,41 +20,32 @@ export async function showList(chat_id: number, bot: TelegramBot): Promise<void>
   await telegram.sendMessage(chat_id, buttons, i18n.message_text, bot);
 }
 
-async function listItemButtons(chat_id: number): Promise<InlineKeyboard> {
-  const list_items = await db.getAllItemsForChat(chat_id);
-  const buttons = telegram.buttons(list_items);
-  return buttons;
-}
-
-export async function removeListItem(query: CallbackQuery): Promise<void> {
-  const id_to_remove = parseItemId(query.data);
+export async function removeListItem(item_id: string | undefined): Promise<void> {
+  if (item_id === undefined) {
+    throw new Error('Tried to remove a list item but item_id is undefined.');
+  }
+  const id_to_remove = parseItemId(item_id);
   await db.removeListItem(id_to_remove);
 }
 
-function parseItemId(query_data: string | undefined): number {
-  if (query_data === undefined) {
-    throw new Error('Tried to remove a list item but "data"-object of the button-click-query is undefined. Expected: the ID of the item to remove.');
-  }
-  const id = parseInt(query_data);
+function parseItemId(item_id: string): number {
+  const id = parseInt(item_id);
   if (Number.isNaN(id)) {
-    throw new Error(`Tried to remove a list item but "data"-object of the button-click-query is not a number. Expected: the ID of the item to remove. Actual: ${query_data}`);
+    throw new Error(`Tried to remove a list item but item_id is not a number: ${item_id}`);
   }
   return id;
 }
 
-export async function updateListButtons(query: CallbackQuery, bot: TelegramBot): Promise<void> {
-  const { message } = query;
-  if (message === undefined) {
-    throw new Error('Tried to update the list-buttons but "query.message" is undefined.');
+export async function updateListButtons(query_id: string, query_message: Message | undefined, bot: TelegramBot): Promise<void> {
+  if (query_message === undefined) {
+    throw new Error('Tried to update the list-buttons but "query.query_message" is undefined.');
   }
-  const buttons = await listItemButtons(message.chat.id);
-  bot.answerCallbackQuery(query.id, { text: '' }).then(async () => {
-    const options: EditMessageTextOptions = {
-      chat_id: message.chat.id,
-      message_id: message.message_id,
-      parse_mode: 'MarkdownV2',
-      reply_markup: buttons.length > 0 ? buttons.getMarkup() : undefined,
-    };
-    bot.editMessageText(i18n.message_text, options);
-  });
+  const buttons = await listItemButtons(query_message.chat.id);
+  telegram.changeMessage(i18n.message_text, buttons, query_id, query_message, bot);
+}
+
+async function listItemButtons(chat_id: number): Promise<InlineKeyboard> {
+  const list_items = await db.getAllItemsForChat(chat_id);
+  const buttons = telegram.buttons(list_items);
+  return buttons;
 }
