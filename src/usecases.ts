@@ -1,10 +1,9 @@
 import TelegramBot, { CallbackQuery, EditMessageTextOptions } from 'node-telegram-bot-api';
-import { InlineKeyboard, InlineKeyboardButton, Row } from 'node-telegram-keyboard-wrapper';
+import { InlineKeyboard } from 'node-telegram-keyboard-wrapper';
 import { DB } from './adapters/db';
 import * as telegram from './adapters/telegram';
 import { extractListItemTexts } from './core';
 import { i18n } from './i18n';
-import { ListItem } from './models';
 
 const db = new DB();
 
@@ -22,20 +21,12 @@ export async function showList(chat_id: number, bot: TelegramBot): Promise<void>
 }
 
 async function listItemButtons(chat_id: number): Promise<InlineKeyboard> {
-  const previous_items = await db.getAllItemsForChat(chat_id);
-  const buttons = new InlineKeyboard();
-  previous_items.forEach((item: ListItem) => addButton(buttons, item.id, item.text));
+  const list_items = await db.getAllItemsForChat(chat_id);
+  const buttons = telegram.buttons(list_items);
   return buttons;
 }
 
-function addButton(buttons: InlineKeyboard, id: number, text: string) {
-  buttons.push(new Row(new InlineKeyboardButton(text, 'callback_data', id.toString())));
-}
-
 export async function removeListItem(query: CallbackQuery): Promise<void> {
-  if (query.message === undefined) {
-    throw new Error(`Tried to remove a list item, but query doesn't have a message object. Query: ${query}`);
-  }
   const id_to_remove = parseItemId(query.data);
   await db.removeListItem(id_to_remove);
 }
