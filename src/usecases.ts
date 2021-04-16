@@ -16,6 +16,13 @@ export async function addListItems(chat_id: number, message_text: string | undef
   await db.insertListItems(chat_id, item_texts);
 }
 
+export async function removeCheckedItems(chat_id: number): Promise<void> {
+  const checked_items = await db.getCheckedItemsForChat(chat_id);
+  for (const item of checked_items) {
+    await db.removeListItem(item.id);
+  }
+}
+
 export async function showList(chat_id: number, message_id: number, bot: TelegramBot): Promise<void> {
   const buttons = await listItemButtons(chat_id);
   await telegram.replaceMessage(chat_id, message_id, i18n.message_text, bot, buttons);
@@ -46,7 +53,7 @@ export async function updateListButtons(query_id: string, query_message: Message
     throw new Error('Tried to update the list-buttons but "query.query_message" is undefined.');
   }
   const buttons = await listItemButtons(query_message.chat.id);
-  telegram.changeMessage(i18n.message_text, buttons, query_id, query_message, bot);
+  await telegram.changeMessage(i18n.message_text, buttons, query_id, query_message, bot);
 }
 
 async function listItemButtons(chat_id: number): Promise<InlineKeyboard> {

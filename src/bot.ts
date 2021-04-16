@@ -1,12 +1,13 @@
 
 import TelegramBot, { CallbackQuery, Message } from 'node-telegram-bot-api';
 import { ENV } from './adapters/environment-variables';
-import { addListItems, checkListItem, showHelpMessage, showList, updateListButtons } from './usecases';
+import { addListItems, checkListItem, removeCheckedItems, showHelpMessage, showList, updateListButtons } from './usecases';
 
 export const bot = new TelegramBot(ENV.BOT_TOKEN, { polling: true });
 
 bot.onText(/^\/(L|l)ist(e)?.*/, async (message: Message) => {
   await addListItems(message.chat.id, message.text);
+  await removeCheckedItems(message.chat.id);
   await showList(message.chat.id, message.message_id, bot);
 });
 

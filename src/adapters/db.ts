@@ -20,6 +20,10 @@ export class DB {
     return await all<ListItem>(this.db, 'SELECT * FROM list_items WHERE chat_id=?', [chat_id]);
   }
 
+  public async getCheckedItemsForChat(chat_id: number): Promise<ListItem[]> {
+    return await all<ListItem>(this.db, `SELECT * FROM list_items WHERE chat_id=? AND checked="${BOOL.TRUE}"`, [chat_id]);
+  }
+
   public async insertListItems(chat_id: number, item_texts: string[]): Promise<void> {
     await Promise.all(item_texts.map(async (item_text: string) => {
       await run(this.db, `INSERT INTO list_items (chat_id, text, checked) VALUES (?,?, "${BOOL.FALSE}")`, [chat_id, item_text]);
