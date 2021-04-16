@@ -7,7 +7,7 @@ export const bot = new TelegramBot(ENV.BOT_TOKEN, { polling: true });
 
 bot.onText(/^\/(L|l)ist(e)?.*/, async (message: Message) => {
   await addListItems(message.chat.id, message.text);
-  await showList(message.chat.id, bot);
+  await showList(message.chat.id, message.message_id, bot);
 });
 
 bot.on('callback_query', async (query: CallbackQuery) => {

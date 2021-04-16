@@ -15,7 +15,8 @@ export async function addListItems(chat_id: number, message_text: string | undef
   await db.insertListItems(chat_id, item_texts);
 }
 
-export async function showList(chat_id: number, bot: TelegramBot): Promise<void> {
+export async function showList(chat_id: number, message_id: number, bot: TelegramBot): Promise<void> {
+  telegram.deleteMessage(chat_id, message_id, bot);
   const buttons = await listItemButtons(chat_id);
   await telegram.sendMessage(chat_id, buttons, i18n.message_text, bot);
 }

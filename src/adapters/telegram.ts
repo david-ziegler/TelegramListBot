@@ -36,3 +36,7 @@ export async function buttons(items: ListItem[]): Promise<InlineKeyboard> {
   });
   return buttons;
 }
+
+export function deleteMessage(chat_id: number, message_id: number, bot: TelegramBot): void {
+  bot.deleteMessage(chat_id, message_id.toString());
+}
