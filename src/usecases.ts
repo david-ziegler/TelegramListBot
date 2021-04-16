@@ -50,6 +50,14 @@ export async function updateListButtons(query_id: string, query_message: Message
 
 async function listItemButtons(chat_id: number): Promise<InlineKeyboard> {
   const list_items = await db.getAllItemsForChat(chat_id);
-  const buttons = telegram.buttons(list_items);
+  const button_items = list_items.map(toButton);
+  const buttons = telegram.buttons(button_items);
   return buttons;
+}
+
+function toButton(item: ListItem) {
+  return {
+    id: item.id.toString(),
+    text: item.text,
+  };
 }

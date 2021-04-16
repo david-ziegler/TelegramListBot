@@ -42,11 +42,16 @@ export async function changeMessage(
   });
 }
 
-export async function buttons(items: ListItem[]): Promise<InlineKeyboard> {
+export async function buttons(items: Button[]): Promise<InlineKeyboard> {
   const buttons = new InlineKeyboard();
-  items.forEach((item: ListItem) => {
-    const row = new Row(new InlineKeyboardButton(item.text, 'callback_data', item.id.toString()));
+  items.forEach((item: Button) => {
+    const row = new Row(new InlineKeyboardButton(item.text, 'callback_data', item.id));
     buttons.push(row);
   });
   return buttons;
+}
+
+export interface Button {
+  id: string;
+  text: string;
 }
