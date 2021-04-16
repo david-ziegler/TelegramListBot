@@ -2,12 +2,19 @@ import TelegramBot, { EditMessageTextOptions, Message, SendMessageOptions } from
 import { InlineKeyboard, InlineKeyboardButton, Row } from 'node-telegram-keyboard-wrapper';
 import { ListItem } from '../models';
 
-export async function sendMessage(chat_id: number, buttons: InlineKeyboard, message_text: string, bot: TelegramBot): Promise<void> {
+export async function replaceMessage(
+  chat_id: number,
+  message_id: number,
+  message_text: string,
+  buttons: InlineKeyboard,
+  bot: TelegramBot,
+): Promise<void> {
   const options: SendMessageOptions = {
     parse_mode: 'MarkdownV2',
     reply_markup: buttons.length > 0 ? buttons.getMarkup() : undefined,
   };
   await bot.sendMessage(chat_id, message_text, options);
+  bot.deleteMessage(chat_id, message_id.toString());
 }
 
 export async function changeMessage(
@@ -35,8 +42,4 @@ export async function buttons(items: ListItem[]): Promise<InlineKeyboard> {
     buttons.push(row);
   });
   return buttons;
-}
-
-export function deleteMessage(chat_id: number, message_id: number, bot: TelegramBot): void {
-  bot.deleteMessage(chat_id, message_id.toString());
 }
