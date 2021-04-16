@@ -17,7 +17,11 @@ export async function addListItems(chat_id: number, message_text: string | undef
 
 export async function showList(chat_id: number, message_id: number, bot: TelegramBot): Promise<void> {
   const buttons = await listItemButtons(chat_id);
-  await telegram.replaceMessage(chat_id, message_id, i18n.message_text, buttons, bot);
+  await telegram.replaceMessage(chat_id, message_id, i18n.message_text, bot, buttons);
+}
+
+export async function showHelpMessage(chat_id: number, message_id: number, bot: TelegramBot): Promise<void> {
+  await telegram.replaceMessage(chat_id, message_id, i18n.help_text, bot);
 }
 
 export async function removeListItem(item_id: string | undefined): Promise<void> {

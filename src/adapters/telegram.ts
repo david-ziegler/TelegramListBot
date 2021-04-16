@@ -6,15 +6,22 @@ export async function replaceMessage(
   chat_id: number,
   message_id: number,
   message_text: string,
-  buttons: InlineKeyboard,
   bot: TelegramBot,
+  buttons?: InlineKeyboard,
 ): Promise<void> {
   const options: SendMessageOptions = {
     parse_mode: 'MarkdownV2',
-    reply_markup: buttons.length > 0 ? buttons.getMarkup() : undefined,
+    reply_markup: buttonMarkup(buttons),
   };
   await bot.sendMessage(chat_id, message_text, options);
   bot.deleteMessage(chat_id, message_id.toString());
+}
+
+function buttonMarkup(buttons?: InlineKeyboard) {
+  if (buttons === undefined || buttons.length === 0) {
+    return undefined;
+  }
+  return buttons.getMarkup();
 }
 
 export async function changeMessage(
