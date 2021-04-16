@@ -3,6 +3,11 @@ import { ListItem } from '../models';
 import { all, run } from './db-helpers';
 import { ENV } from './environment-variables';
 
+export enum BOOL {
+  TRUE = 'TRUE',
+  FALSE = 'FALSE',
+}
+
 export class DB {
   private db: Database;
 
@@ -17,8 +22,12 @@ export class DB {
 
   public async insertListItems(chat_id: number, item_texts: string[]): Promise<void> {
     await Promise.all(item_texts.map(async (item_text: string) => {
-      await run(this.db, 'INSERT INTO list_items (chat_id, text) VALUES (?,?)', [chat_id, item_text]);
+      await run(this.db, `INSERT INTO list_items (chat_id, text, checked) VALUES (?,?, "${BOOL.FALSE}")`, [chat_id, item_text]);
     }));
+  }
+
+  public async checkListItem(id: number): Promise<void> {
+    await run(this.db, `UPDATE list_items SET checked = "${BOOL.TRUE}" WHERE id=?`, [id]);
   }
 
   public async removeListItem(id: number): Promise<void> {

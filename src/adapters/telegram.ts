@@ -1,6 +1,5 @@
 import TelegramBot, { EditMessageTextOptions, Message, SendMessageOptions } from 'node-telegram-bot-api';
 import { InlineKeyboard, InlineKeyboardButton, Row } from 'node-telegram-keyboard-wrapper';
-import { ListItem } from '../models';
 
 export async function replaceMessage(
   chat_id: number,

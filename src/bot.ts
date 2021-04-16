@@ -1,7 +1,7 @@
 
 import TelegramBot, { CallbackQuery, Message } from 'node-telegram-bot-api';
 import { ENV } from './adapters/environment-variables';
-import { addListItems, removeListItem, showHelpMessage, showList, updateListButtons } from './usecases';
+import { addListItems, checkListItem, showHelpMessage, showList, updateListButtons } from './usecases';
 
 export const bot = new TelegramBot(ENV.BOT_TOKEN, { polling: true });
 
@@ -15,6 +15,6 @@ bot.onText(/^\/(H|h)elp.*/, async (message: Message) => {
 });
 
 bot.on('callback_query', async (query: CallbackQuery) => {
-  await removeListItem(query.data);
+  await checkListItem(query.data);
   await updateListButtons(query.id, query.message, bot);
 });

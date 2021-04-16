@@ -1,9 +1,10 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
 import { InlineKeyboard } from 'node-telegram-keyboard-wrapper';
-import { DB } from './adapters/db';
+import { BOOL, DB } from './adapters/db';
 import * as telegram from './adapters/telegram';
 import { extractListItemTexts } from './core';
 import { i18n } from './i18n';
+import { ListItem } from './models';
 
 const db = new DB();
 
@@ -24,12 +25,12 @@ export async function showHelpMessage(chat_id: number, message_id: number, bot: 
   await telegram.replaceMessage(chat_id, message_id, i18n.help_text, bot);
 }
 
-export async function removeListItem(item_id: string | undefined): Promise<void> {
+export async function checkListItem(item_id: string | undefined): Promise<void> {
   if (item_id === undefined) {
-    throw new Error('Tried to remove a list item but item_id is undefined.');
+    throw new Error('Tried to check a list item but item_id is undefined.');
   }
   const id_to_remove = parseItemId(item_id);
-  await db.removeListItem(id_to_remove);
+  await db.checkListItem(id_to_remove);
 }
 
 function parseItemId(item_id: string): number {
@@ -56,8 +57,12 @@ async function listItemButtons(chat_id: number): Promise<InlineKeyboard> {
 }
 
 function toButton(item: ListItem) {
+  let text = item.text;
+  if (item.checked === BOOL.TRUE) {
+    text = '✅ ' + item.text;
+  }
   return {
     id: item.id.toString(),
-    text: item.text,
+    text,
   };
 }

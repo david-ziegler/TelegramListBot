@@ -29,7 +29,7 @@ If you first want to try out how to use the bot, you can simply start a private 
 5. Create the database-tables by running the following three commands:
 ```
 sqlite3 ./data/development.db
-> CREATE TABLE list_items ("id" INTEGER NOT NULL UNIQUE,"chat_id" INTEGER NOT NULL,"text" TEXT NOT NULL, PRIMARY KEY("id" AUTOINCREMENT));
+> CREATE TABLE list_items ("id" INTEGER NOT NULL UNIQUE,"chat_id" INTEGER NOT NULL,"text" TEXT NOT NULL, "checked" TEXT NOT NULL, PRIMARY KEY("id" AUTOINCREMENT));
 ```
 
 3. Rename the file `.env_example` to `.env` and set `DEV_BOT_TOKEN` to the token, you've got from BotFather. 
